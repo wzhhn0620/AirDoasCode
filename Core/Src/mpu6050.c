@@ -1,5 +1,6 @@
 #include "mpu6050.h"
 
+int8_t Reset_Bit = 0;
 int16_t Mpu6050Addr = 0x68;
 MPU6050DATATYPE Mpu6050_Data;
 

@@ -24,6 +24,14 @@ void Mpu6050_Measure(void const * argument){
 		M_get_angle(q0, q1, q2, q3, &yaw, &pitch, &roll);
 		Roll_x = (float)roll;
 
+		if (abs((int16_t)Roll_x) > 160) {
+			if (Reset_Bit) {
+				HAL_NVIC_SystemReset();
+			}
+		}else if (abs((int16_t)Roll_x) < 100) {
+			Reset_Bit = 1;
+		}
+
 		if (IMU_Angle_Log) {
 			printf("%.2f\r\n",Roll_x);
 		}

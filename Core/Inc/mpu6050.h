@@ -55,6 +55,7 @@ extern MPU6050DATATYPE Mpu6050_Data;
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c2;
 extern int16_t Mpu6050Addr;
+extern int8_t Reset_Bit;
 
 int16_t Sensor_I2C2_Serch(void);
 int8_t MPU6050_Init(int16_t Addr);

@@ -238,27 +238,31 @@ void M_get_angle(float q0, float q1, float q2, float q3, fp32 *yaw, fp32 *pitch,
 
 	float Roll_x = *roll;
 
-	if (Roll_x>=80.6) {
-		Roll_x = 0.961538*Roll_x+2.5;
-	}else if (Roll_x>=60 && Roll_x<80.6) {
-		Roll_x = 0.9708737*Roll_x+1.7475728;
-	}else if (Roll_x>=29 && Roll_x<60) {
-		Roll_x = 0.9677419*Roll_x+1.9354838;
-	}else if (Roll_x>=8.9 && Roll_x<29) {
-		Roll_x = 0.9950248*Roll_x+1.1442786;
-	}else if (Roll_x>=-1.5 && Roll_x<8.9) {
-		Roll_x = 0.96153846 * Roll_x+1.44230769;
-	}else if (Roll_x>=-11.6 && Roll_x<-1.5) {
-		Roll_x = 0.990099*Roll_x+1.4851485;
-	}else if (Roll_x>=-31.6 && Roll_x<-11.6) {
-		Roll_x = 1.0*Roll_x+1.6;
-	}else if (Roll_x>=-61.6 && Roll_x<-31.6) {
-		Roll_x = 1.0*Roll_x+1.6;
-	}else if (Roll_x>=-81.6 && Roll_x<-61.6) {
-		Roll_x = 1.0*Roll_x+1.6;
-	}else if (Roll_x<-81.6) {
-		Roll_x = 1.0*Roll_x+1.6;
-	}
+//抛物面镜处理函数
+//	if (Roll_x>=80.6) {
+//		Roll_x = 0.961538*Roll_x+2.5;
+//	}else if (Roll_x>=60 && Roll_x<80.6) {
+//		Roll_x = 0.9708737*Roll_x+1.7475728;
+//	}else if (Roll_x>=29 && Roll_x<60) {
+//		Roll_x = 0.9677419*Roll_x+1.9354838;
+//	}else if (Roll_x>=8.9 && Roll_x<29) {
+//		Roll_x = 0.9950248*Roll_x+1.1442786;
+//	}else if (Roll_x>=-1.5 && Roll_x<8.9) {
+//		Roll_x = 0.96153846 * Roll_x+1.44230769;
+//	}else if (Roll_x>=-11.6 && Roll_x<-1.5) {
+//		Roll_x = 0.990099*Roll_x+1.4851485;
+//	}else if (Roll_x>=-31.6 && Roll_x<-11.6) {
+//		Roll_x = 1.0*Roll_x+1.6;
+//	}else if (Roll_x>=-61.6 && Roll_x<-31.6) {
+//		Roll_x = 1.0*Roll_x+1.6;
+//	}else if (Roll_x>=-81.6 && Roll_x<-61.6) {
+//		Roll_x = 1.0*Roll_x+1.6;
+//	}else if (Roll_x<-81.6) {
+//		Roll_x = 1.0*Roll_x+1.6;
+//	}
+
+//直角棱镜处理函数
+	Roll_x = Roll_x / 107.0 * 90.0;
 
 	*roll = Roll_x;
 

@@ -59,10 +59,10 @@ void STEPMotor_Angle_Ctrl(void){
 	if (SECTask > 100) {
 		HAL_IWDG_Refresh(&hiwdg);
 		if (SET_ANGLE_COMP == 1) {
-				Angle_offset = Roll_x-Angletarget;
-				if (fabs(Angle_offset)>=0.5) {
-					PID_SingleCalc(&motor_PID, Angletarget, Roll_x);
-					Angle_offset = motor_PID.output;
+				Angle_offset = (Roll_x-Angletarget) * 0.9;
+				if (fabs(Angle_offset)>=1) {
+//					PID_SingleCalc(&motor_PID, Angletarget, Roll_x);
+//					Angle_offset = motor_PID.output;
 					if (Angle_offset>0) {
 						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
 	//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
@@ -109,11 +109,14 @@ void STEPMotor_Set_Angle(void){
 		}
 
 	}
+}
 
+void STEPMotor_Set_Angle_Done(void){
 	if (SET_ANGLE_FINISH == 1) {
-		HAL_Delay(100);
+//		HAL_Delay(100);
+		vTaskDelay(50);
 		Angle_offset = Roll_x-Angletarget;
-		if (fabs(Angle_offset)<0.5) {
+		if (fabs(Angle_offset)<1) {
 //			USART_SEND_SIGN = 1;
 			USART_RET_SBUF_CREATE(USART1_RET_SBUF, 0x81, 0x11, 0x01, 0x01, 0x00);
 			HAL_UART_Transmit_DMA(&huart1,USART1_RET_SBUF,5);	//发�??
@@ -123,7 +126,6 @@ void STEPMotor_Set_Angle(void){
 		}
 	}
 }
-
 
 
 

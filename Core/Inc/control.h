@@ -23,5 +23,6 @@ void PID_Clear(PID *pid);
 void PID_SingleCalc(PID *pid,float reference,float feedback);
 void STEPMotor_Angle_Ctrl(void);
 void STEPMotor_Set_Angle(void);
+void STEPMotor_Set_Angle_Done(void);
 
 #endif /* INC_CONTROL_H_ */

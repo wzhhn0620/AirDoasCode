@@ -139,11 +139,11 @@ int main(void)
 //  OLED_Refresh();
 //  OLED_show();
 
-  //BMI160初始�????????????
+  //BMI160初始�??????????????
 //  init_bmi160();
 
-  //MPU6050初始�????????????
-
+  //MPU6050初始�??????????????
+  Reset_Bit = 0;
   MPU6050_Init(Sensor_I2C2_Serch());
 
   printf("Init is OK!\r\n");
@@ -151,7 +151,7 @@ int main(void)
   HAL_IWDG_Init(&hiwdg);
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
   HAL_UART_Receive_DMA(&huart1, (uint8_t*)receive_buff, BUFFER_SIZE);
-  PID_Init(&motor_PID, 1, 0.0, 0.0, 1000, 1500);
+//  PID_Init(&motor_PID, 1, 0.0, 0.0, 1000, 1500);
 
 //  HAL_TIM_Base_Start_IT(&htim1);
 //  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
@@ -237,7 +237,7 @@ void SystemClock_Config(void)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
+  * @note   This function is called  when TIM8 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -248,7 +248,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM8) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
