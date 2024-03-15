@@ -11,6 +11,8 @@
 #include "mpu6050.h"
 #include "iwdg.h"
 
+uint8_t Stop_Ctrl = 0;
+
 PID motor_PID;
 
 #define LIMIT(x,min,max) (x)=(((x)<=(min))?(min):(((x)>=(max))?(max):(x)))
@@ -56,27 +58,51 @@ void PID_SingleCalc(PID *pid,float reference,float feedback)
 /**************************步进电机角度控制*********************************/
 void STEPMotor_Angle_Ctrl(void){
 	SECTask++;
-	if (SECTask > 100) {
-		HAL_IWDG_Refresh(&hiwdg);
-		if (SET_ANGLE_COMP == 1) {
-				Angle_offset = (Roll_x-Angletarget) * 0.9;
-				if (fabs(Angle_offset)>=1) {
-//					PID_SingleCalc(&motor_PID, Angletarget, Roll_x);
-//					Angle_offset = motor_PID.output;
-					if (Angle_offset>0) {
-						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
-	//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
-						count = (int)(Angle_offset*reducer*64/1.8);
-					}else {
-						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
-	//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
-						count = -(int)(Angle_offset*reducer*64/1.8);
-					}
+	if (SECTask > 10) {
+		if (Real_Time_Ctrl) {
+			if (SET_ANGLE_COMP == 1) {
+					Angle_offset = (Roll_x-Angletarget) * 0.6;
+					if (fabs(Angle_offset)>=0.5) {
+	//					PID_SingleCalc(&motor_PID, Angletarget, Roll_x);
+	//					Angle_offset = motor_PID.output;
+						if (Angle_offset>0) {
+							HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+		//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+							count = (int)(Angle_offset*reducer*64/1.8);
+						}else {
+							HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+		//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+							count = -(int)(Angle_offset*reducer*64/1.8);
+						}
 
-					HAL_TIM_PWM_Start_IT(&htim3,TIM_CHANNEL_1);
-					SET_ANGLE_COMP = 3;
+						HAL_TIM_PWM_Start_IT(&htim3,TIM_CHANNEL_1);
+						SET_ANGLE_COMP = 3;
+					}
+			}
+		}else {
+			if (Stop_Ctrl == 0) {
+				if (SET_ANGLE_COMP == 1) {
+					Angle_offset = (Roll_x-Angletarget) * 0.6;
+					if (fabs(Angle_offset)>=0.5) {
+		//					PID_SingleCalc(&motor_PID, Angletarget, Roll_x);
+		//					Angle_offset = motor_PID.output;
+						if (Angle_offset>0) {
+							HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+		//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+							count = (int)(Angle_offset*reducer*64/1.8);
+						}else {
+							HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+		//								HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+							count = -(int)(Angle_offset*reducer*64/1.8);
+						}
+
+						HAL_TIM_PWM_Start_IT(&htim3,TIM_CHANNEL_1);
+						SET_ANGLE_COMP = 3;
+					}
 				}
+			}
 		}
+		HAL_IWDG_Refresh(&hiwdg);
 		SECTask = 0;
 	//		printf("%.2f\r\n",temperature);
 
@@ -114,15 +140,22 @@ void STEPMotor_Set_Angle(void){
 void STEPMotor_Set_Angle_Done(void){
 	if (SET_ANGLE_FINISH == 1) {
 //		HAL_Delay(100);
-		vTaskDelay(50);
-		Angle_offset = Roll_x-Angletarget;
-		if (fabs(Angle_offset)<1) {
-//			USART_SEND_SIGN = 1;
+		if (Real_Time_Ctrl) {
+			vTaskDelay(50);
+			Angle_offset = Roll_x-Angletarget;
+			if (fabs(Angle_offset)<1) {
+	//			USART_SEND_SIGN = 1;
+				USART_RET_SBUF_CREATE(USART1_RET_SBUF, 0x81, 0x11, 0x01, 0x01, 0x00);
+				HAL_UART_Transmit_DMA(&huart1,USART1_RET_SBUF,5);	//发�??
+	//			while(__HAL_UART_GET_FLAG(&huart1,UART_FLAG_TC)!=SET);		//等待发�?�完�???????????????????????????????????
+				SET_ANGLE_FINISH = 0;
+	//			USART_SEND_SIGN = 0;
+			}
+		}else {
 			USART_RET_SBUF_CREATE(USART1_RET_SBUF, 0x81, 0x11, 0x01, 0x01, 0x00);
 			HAL_UART_Transmit_DMA(&huart1,USART1_RET_SBUF,5);	//发�??
 //			while(__HAL_UART_GET_FLAG(&huart1,UART_FLAG_TC)!=SET);		//等待发�?�完�???????????????????????????????????
 			SET_ANGLE_FINISH = 0;
-//			USART_SEND_SIGN = 0;
 		}
 	}
 }

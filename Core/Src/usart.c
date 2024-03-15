@@ -25,6 +25,7 @@
 #include "main.h"
 #include "oled.h"
 #include <stdio.h>
+#include "control.h"
 
 uint8_t aRxBuffer[RXBUFFERSIZE];
 uint8_t temp=0;
@@ -430,6 +431,12 @@ void AIRDOAS_USART1_Handle(void){
 	//						}
 					Angletarget = ((float)USART1_ROLLX_ANGLE)/100.0;
 					Angleoriginal = Angletarget;
+
+					if (Real_Time_Ctrl == 0) {
+						if (fabs(Angletarget)<0.01) {
+							Stop_Ctrl = Stop_Ctrl?0:1;
+						}
+					}
 
 
 					SET_ANGLE_COMP = 0;

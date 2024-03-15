@@ -7,6 +7,11 @@
 
 #ifndef INC_CONTROL_H_
 #define INC_CONTROL_H_
+#include "struct_typedef.h"
+
+#define Real_Time_Ctrl 0x00
+
+extern uint8_t Stop_Ctrl;
 
 typedef struct _PID
 {
